@@ -23,7 +23,7 @@ let
         else
           ln -snf $psrc $REPO/${pkg.ename}
         fi
-        ${optionalString (pkg.src.meta ? homepage) ''
+        ${optionalString ((pkg.src ? meta) && (pkg.src.meta ? homepage)) ''
           if [[ ! -d $REPO/${baseNameOf pkg.src.meta.homepage} ]]; then
             ln -snf $psrc $REPO/${baseNameOf pkg.src.meta.homepage}
           fi
