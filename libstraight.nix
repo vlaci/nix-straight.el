@@ -1,8 +1,9 @@
-{ lib, stdenv, epkgs, writeScript }:
+{ abortOnNotFound ? true,
+  lib, stdenv, epkgs, writeScript }:
 
 let
   inherit (builtins) filter trace;
-  inherit (lib) concatMapStringsSep escapeShellArgs importJSON flatten unique optionalString;
+  inherit (lib) concatMapStringsSep escapeShellArgs importJSON flatten unique optionalString warn;
 
   expandDependencies = packages:
     let
@@ -39,7 +40,8 @@ let
       list = importJSON json;
     in map (x:
       if epkgs ? "${x}" then epkgs.${x}
-      else (trace "XXX no attribute found for use-package ${x}") null) list;
+      else if abortOnNotFound then abort "Package not available: ${x}"
+      else (warn "Package not available: ${x}") null) list;
 
   packagesJSON = { emacsInitFile, emacsLoadFiles, emacsArgs }: stdenv.mkDerivation {
     name = "emacs-straight-packages.json";

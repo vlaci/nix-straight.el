@@ -9,11 +9,15 @@
                             (let ((pkg (if (listp recipe)
                                               (car recipe)
                                          recipe)))
-                              (message "straight-use-package %s %s; pkg=%s" recipe r pkg)
+                              (message "straight-use-package %s %s" recipe r)
                               (add-to-list 'nix-straight--packages pkg))))
     (advice-add 'straight-recipes-retrieve
                 :override (lambda (pkg)
                             (list)))
+    (advice-add 'straight-use-recipes
+                :override (lambda (&rest r)
+                            (message "straight-use-recipes %s" r)
+                            ))
 
     (load init-file nil nil t)
     (princ (if (null nix-straight--packages)
