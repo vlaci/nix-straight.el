@@ -1,8 +1,9 @@
-{ lib, stdenv, epkgs, writeScript }:
+{ abortOnNotFound ? true,
+  lib, stdenv, epkgs, emacs, writeScript }:
 
 let
   inherit (builtins) filter trace;
-  inherit (lib) concatMapStringsSep escapeShellArgs importJSON flatten unique optionalString;
+  inherit (lib) concatMapStringsSep escapeShellArgs importJSON flatten unique optionalString warn;
 
   expandDependencies = packages:
     let
@@ -23,7 +24,7 @@ let
         else
           ln -snf $psrc $REPO/${pkg.ename}
         fi
-        ${optionalString (pkg.src.meta ? homepage) ''
+        ${optionalString ((pkg.src ? meta) && (pkg.src.meta ? homepage)) ''
           if [[ ! -d $REPO/${baseNameOf pkg.src.meta.homepage} ]]; then
             ln -snf $psrc $REPO/${baseNameOf pkg.src.meta.homepage}
           fi
@@ -39,11 +40,12 @@ let
       list = importJSON json;
     in map (x:
       if epkgs ? "${x}" then epkgs.${x}
-      else (trace "XXX no attribute found for use-package ${x}") null) list;
+      else if abortOnNotFound then abort "Package not available: ${x}"
+      else (warn "Package not available: ${x}") null) list;
 
   packagesJSON = { emacsInitFile, emacsLoadFiles, emacsArgs }: stdenv.mkDerivation {
     name = "emacs-straight-packages.json";
-    buildInputs = [ epkgs.emacs ];
+    buildInputs = [ emacs ];
     buildPhase = ":";
     installPhase = ''
       runHook preInstall
@@ -61,7 +63,7 @@ let
   emacsEnv = { emacsInitFile, emacsLoadFiles, emacsArgs }: { packages, straightDir }: stdenv.mkDerivation {
     name = "straight-emacs-env";
     buildPhase = ":";
-    buildInputs = [ epkgs.emacs ];
+    buildInputs = [ emacs ];
     installPhase = ''
       runHook preInstall
 
