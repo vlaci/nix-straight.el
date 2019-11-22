@@ -1,5 +1,7 @@
 { # Package set to build the Emacs environment from
   emacsPackages
+  # Emacs package to use during build
+, emacs ? emacsPackages.emacs
   # You may override to use your version of `straight`
 , straight ? null
   # Your `init.el` file to use for discovering and installing packages
@@ -14,7 +16,7 @@
 , abortOnNotFound ? false }:
 
 let
-  libstraight = epkgs.callPackage ./libstraight.nix { inherit abortOnNotFound epkgs; };
+  libstraight = epkgs.callPackage ./libstraight.nix { inherit abortOnNotFound epkgs emacs; };
   epkgs =
     if straight == null then
       emacsPackages.overrideScope' (self: super:
