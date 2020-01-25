@@ -16,8 +16,7 @@
                             (list)))
     (advice-add 'straight-use-recipes
                 :override (lambda (&rest r)
-                            (message "straight-use-recipes %s" r)
-                            ))
+                            (message "straight-use-recipes %s" r)))
 
     (load init-file nil nil t)
     (princ (if (null nix-straight--packages)
@@ -33,10 +32,11 @@
   (advice-add 'straight-recipes-retrieve
               :override (lambda (pkg &rest r)
                           (message "  Crafting recipe %s" pkg)
-                          (if (file-exists-p (straight--repos-dir (format "%s" pkg)))
-                              `(,pkg :local-repo ,(format "%s" pkg))
-                            (message  "  --> Repo directory for package not exists, assuming built-in; %s" pkg)
-                            `(,pkg :type built-in))))
+                          (let ((pkg-name (symbol-name pkg)))
+                            (if (file-exists-p (straight--repos-dir pkg-name))
+                                (list pkg :local-repo pkg-name :repo pkg-name :type 'git)
+                              (message  "  --> Repo directory for package not exists, assuming built-in; %s" pkg)
+                              (list pkg :type 'built-in)))))
   (load init-file nil nil t))
 
 (provide 'setup)
