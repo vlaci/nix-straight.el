@@ -1,6 +1,5 @@
 ;;; -*- lexical-binding: t; -*-
 (require 'json)
-(require 'straight)
 
 (defun nix-straight-get-used-packages (init-file)
   (let ((nix-straight--packages nil))
