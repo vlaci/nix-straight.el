@@ -13,7 +13,7 @@
 , emacsLoadFiles ? []
   # Abort processing if a package not found in `emacsPackages`
   # Setting it to false will result in just skipping an unavailable package
-, abortOnNotFound ? false }:
+, abortOnNotFound ? true }:
 
 let
   libstraight = epkgs.callPackage ./libstraight.nix { inherit abortOnNotFound epkgs emacs; };
