@@ -10,12 +10,6 @@
                                          recipe)))
                               (message "[nix-straight.el] Collectiong package '%s' from recipe '%s'" pkg recipe)
                               (add-to-list 'nix-straight--packages pkg))))
-    (advice-add 'straight-recipes-retrieve
-                :override (lambda (pkg)
-                            (list)))
-    (advice-add 'straight-use-recipes
-                :override (lambda (&rest r)
-                            (message "straight-use-recipes %s" r)))
 
     (load init-file nil nil t)
     (princ (if (null nix-straight--packages)
