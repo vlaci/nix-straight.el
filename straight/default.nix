@@ -6,7 +6,7 @@ trivialBuild rec {
   src = fetchFromGitHub {
     owner = "raxod502";
     repo = "straight.el";
-    rev = "388bf37f30f0934c8ef1b52edfd65875e945da21";
-    sha256 = "1d8kg63yamkanrx6l8mi8ybj2xb8zmkhqc10q5p3xn319gs36jgp";
+    rev = "59c92dd45085b8f8fc44ea0039c205f4a3c43b62";
+    sha256 = "00ibxmgqfb5bqd4b9jqj8vdiszkph6vv64m1y3kf9xav15v8sfyx";
   };
 }
