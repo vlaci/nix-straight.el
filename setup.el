@@ -8,7 +8,7 @@
                             (let ((pkg (if (listp recipe)
                                               (car recipe)
                                          recipe)))
-                              (message "straight-use-package %s %s" recipe r)
+                              (message "[nix-straight.el] Collectiong package '%s' from recipe '%s'" pkg recipe)
                               (add-to-list 'nix-straight--packages pkg))))
     (advice-add 'straight-recipes-retrieve
                 :override (lambda (pkg)
@@ -26,16 +26,17 @@
 
 (defun nix-straight-build-packages (init-file)
   (setq straight-default-files-directive '("*" (:exclude "*.elc")))
-  (advice-add 'straight-vc-git-clone
-              :override (lambda (&rest r)))
-  (advice-add 'straight-recipes-retrieve
-              :override (lambda (pkg &rest r)
-                          (message "  Crafting recipe %s" pkg)
-                          (let ((pkg-name (symbol-name pkg)))
-                            (if (file-exists-p (straight--repos-dir pkg-name))
-                                (list pkg :local-repo pkg-name :repo pkg-name :type 'git)
-                              (message  "  --> Repo directory for package not exists, assuming built-in; %s" pkg)
-                              (list pkg :type 'built-in)))))
+  (advice-add 'straight-use-package
+              :around (lambda (orig-fn &rest r)
+                        (message "     [nix-straight.el] Overriding recipe for '%s'" (car r))
+                        (let* ((pkg (car r))
+                               (pkg-name (symbol-name pkg))
+                               (recipe (if (file-exists-p (straight--repos-dir pkg-name))
+                                           (list pkg :local-repo pkg-name :repo pkg-name :type 'git)
+                                         (list pkg :type 'built-in))))
+                          (message "     --> [nix-straight.el] Recipe generated: %s" recipe)
+                          (straight-override-recipe recipe))
+                        (apply orig-fn r)))
   (load init-file nil nil t))
 
 (provide 'setup)
