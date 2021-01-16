@@ -11,11 +11,14 @@
                               (message "[nix-straight.el] Collectiong package '%s' from recipe '%s'" pkg recipe)
                               (add-to-list 'nix-straight--packages pkg))))
 
-    (load init-file nil nil t)
-    (princ (if (null nix-straight--packages)
-               "[]"
-             (json-encode nix-straight--packages)))
+    (defun nix-straight--print-used-packages ()
+      (princ (if (null nix-straight--packages)
+                 "[]"
+               (json-encode nix-straight--packages))))
 
+    (add-hook 'kill-emacs-hook (lambda() (nix-straight--print-used-packages)))
+
+    (load init-file nil nil t)
     nix-straight--packages))
 
 (defun nix-straight-build-packages (init-file)
