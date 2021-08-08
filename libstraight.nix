@@ -20,7 +20,12 @@ let
         REPO=${repo}
         psrc=(${pkg}/share/emacs/*/*/${pkg.ename}*)
         if [[ ! -d $psrc ]]; then
-          ln -snf ${pkg}/share/emacs/site-lisp $REPO/${pkg.ename}
+          elpa_path=(${pkg}/share/emacs/site-lisp/elpa/*)
+          if [[ -d $elpa_path ]]; then
+            ln -snf $elpa_path $REPO/${pkg.ename}
+          else
+            ln -snf ${pkg}/share/emacs/site-lisp $REPO/${pkg.ename}
+          fi
         else
           ln -snf $psrc $REPO/${pkg.ename}
         fi
