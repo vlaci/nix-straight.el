@@ -1,3 +1,5 @@
+**:warning: I no longer use or develop this package. Use the (nix-community)[https://github.com/nix-community/nix-straight.el] mirror instead.**
+
 # nix-straight.el
 
 Low-level Nix integration to [straight.el](https://github.com/raxod502/straight.el)
